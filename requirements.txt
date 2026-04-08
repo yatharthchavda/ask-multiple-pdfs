@@ -1,6 +1,8 @@
 streamlit
 python-dotenv
 pypdf
+pandas
+numpy
 langchain
 langchain-core
 langchain-community

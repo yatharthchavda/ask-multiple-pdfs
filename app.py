@@ -1,6 +1,8 @@
 import os
 import warnings
 import streamlit as st
+import numpy as np
+import pandas as pd
 from dotenv import load_dotenv
 from pypdf import PdfReader
 from langchain_text_splitters import CharacterTextSplitter
@@ -32,6 +34,37 @@ def get_text_chunks(text):
     )
     chunks = text_splitter.split_text(text)
     return chunks
+
+
+def clean_chunks_with_dataframe(chunks):
+    data = []
+    for i, chunk in enumerate(chunks):
+        cleaned = (chunk or "").strip()
+        data.append({
+            "chunk_id": i,
+            "text": cleaned,
+            "length": len(cleaned),
+        })
+
+    df = pd.DataFrame(data)
+    if df.empty:
+        return df, []
+
+    # Remove empty rows and very short low-signal chunks.
+    df = df[df["length"] > 0].copy()
+    if df.empty:
+        return df, []
+
+    percentile_10 = float(np.percentile(df["length"].to_numpy(), 10))
+    min_length_threshold = max(20, int(percentile_10))
+    filtered_df = df[df["length"] >= min_length_threshold].copy()
+
+    # Ensure we keep at least some chunks even on very small documents.
+    if filtered_df.empty:
+        filtered_df = df.copy()
+
+    filtered_chunks = filtered_df["text"].tolist()
+    return filtered_df, filtered_chunks
 
 
 def get_vectorstore(text_chunks):
@@ -199,10 +232,19 @@ def main():
 
                 # get the text chunks
                 text_chunks = get_text_chunks(raw_text)
-                st.success(f"Processed {len(text_chunks)} chunks successfully!")
+                chunks_df, filtered_chunks = clean_chunks_with_dataframe(text_chunks)
+
+                if not filtered_chunks:
+                    st.error("No usable text chunks found after preprocessing.")
+                    return
+
+                avg_len = float(np.mean(chunks_df["length"].to_numpy()))
+                st.success(
+                    f"Processed {len(filtered_chunks)} chunks (avg length: {avg_len:.1f} chars)."
+                )
 
                 # create vector store
-                vectorstore = get_vectorstore(text_chunks)
+                vectorstore = get_vectorstore(filtered_chunks)
                 st.session_state.vectorstore = vectorstore
 
                 # create conversation chain

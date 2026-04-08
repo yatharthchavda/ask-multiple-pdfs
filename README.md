@@ -5,6 +5,7 @@ A Streamlit app that lets you chat with one or more PDF files using retrieval-au
 It:
 - Extracts text from uploaded PDFs
 - Splits text into chunks
+- Uses Pandas/Numpy preprocessing to analyze and filter chunk quality
 - Builds a FAISS vector index with Hugging Face embeddings
 - Answers questions with conversation memory
 - Uses Gemini API as the primary LLM and automatically falls back to a local Hugging Face model if Gemini is unavailable
@@ -39,6 +40,8 @@ Main packages:
 - `streamlit`
 - `python-dotenv`
 - `pypdf`
+- `pandas`
+- `numpy`
 - `langchain`
 - `langchain-community`
 - `langchain-text-splitters`
@@ -96,6 +99,7 @@ Then open the local URL shown in the terminal (usually `http://localhost:8501`).
 ## Notes
 
 - Embeddings are configured to run on CPU.
+- Chunks are preprocessed with Pandas/Numpy before indexing to remove empty/low-signal text.
 - First run can be slower due to model downloads/caching.
 - If a PDF has no extractable text (for example scanned images without OCR), processing may fail with a "No readable text" message.
 
