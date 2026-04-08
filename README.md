@@ -23,6 +23,7 @@ It:
 
 - `app.py` - Main Streamlit app and RAG/chat pipeline
 - `htmlTemplates.py` - UI templates and CSS
+- `requirements.txt` - Python dependencies
 - `docs/` - Project assets
 
 ## Requirements
@@ -32,6 +33,9 @@ It:
 - Optional Gemini API key for cloud LLM usage
 
 Python packages used by this project:
+- See `requirements.txt` for the complete dependency list.
+
+Main packages:
 - `streamlit`
 - `python-dotenv`
 - `pypdf`
@@ -60,7 +64,7 @@ Python packages used by this project:
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install --upgrade pip
-pip install streamlit python-dotenv pypdf langchain langchain-community langchain-text-splitters langchain-classic langchain-huggingface langchain-google-genai faiss-cpu transformers sentence-transformers torch
+pip install -r requirements.txt
 ```
 
 ### Optional `.env`
