@@ -112,7 +112,6 @@ Then open the local URL shown in the terminal (usually `http://localhost:8501`).
 
 - Local model load errors:
   - Ensure `transformers`, `torch`, and `sentence-transformers` are installed.
-  - Confirm internet access for first-time model downloads.
 
 - FAISS install issues:
   - Use `faiss-cpu` (already listed above).
